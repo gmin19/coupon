@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>베셀 & 레쿠 오키나와 쿠폰북</title>
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="sticky-header">
+        <div class="notice">🔑 결제 시 룸 키를 보여주세요</div>
+        <h1>제휴 매장 쿠폰북</h1>
+    </header>
+
+    <div class="controls">
+        <input type="text" id="search-input" placeholder="매장명 검색 (예: 스테이크)">
+        <select id="location-select">
+            <option value="">🏢 모든 건물 보기</option>
+            <option value="데포 아일랜드">데포 아일랜드 (A~E동)</option>
+            <option value="시사이드">데포 아일랜드 시사이드</option>
+            <option value="아메리칸 데포">아메리칸 데포 (A~C동)</option>
+            <option value="데포 센트럴">데포 센트럴</option>
+            <option value="디스토션">디스토션 (패션/시사이드)</option>
+            <option value="레쿠">레쿠 호텔</option>
+            <option value="힐튼">힐튼 호텔</option>
+            <option value="이온">이온몰 / 기타</option>
+        </select>
+        <div class="categories">
+            <button class="filter-btn active" data-category="all">전체</button>
+            <button class="filter-btn" data-category="맛집">맛집</button>
+            <button class="filter-btn" data-category="카페">카페</button>
+            <button class="filter-btn" data-category="쇼핑">쇼핑</button>
+            <button class="filter-btn" data-category="뷰티">뷰티</button>
+            <button class="filter-btn" data-category="액티비티">액티비티</button>
+        </div>
+    </div>
+
+    <main id="coupon-list"></main>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
