@@ -1,46 +1,977 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>베셀 & 레쿠 오키나와 쿠폰북</title>
-    
-    <link rel="stylesheet" href="style.css">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>제휴 매장 쿠폰북</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #0a6e55;
+    --primary-light: #129170;
+    --primary-pale: #e0f5ef;
+    --accent: #d85a2e;
+    --accent-pale: #faeae3;
+    --bg: #f4f6f5;
+    --card: #ffffff;
+    --text: #1a1a1a;
+    --text-sub: #6b7280;
+    --text-hint: #9ca3af;
+    --border: #e5e7eb;
+    --open-color: #059669;
+    --closed-color: #9ca3af;
+    --fav-on: #e84040;
+    --chip-bg: #edf2f0;
+    --chip-active-bg: #0a6e55;
+    --chip-active-text: #ffffff;
+    --shadow-card: 0 1px 4px rgba(0,0,0,0.07);
+    --shadow-modal: 0 20px 60px rgba(0,0,0,0.35);
+    --radius-card: 14px;
+    --radius-chip: 20px;
+    --radius-btn: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--primary);
+    padding: 14px 16px 0;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .header-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.3px;
+  }
+
+  .key-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255,255,255,0.18);
+    color: rgba(255,255,255,0.92);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  /* ── SEARCH ── */
+  .search-wrap {
+    background: rgba(255,255,255,0.14);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(255,255,255,0.22);
+    transition: background 0.2s;
+  }
+  .search-wrap:focus-within {
+    background: rgba(255,255,255,0.22);
+  }
+
+  .search-icon {
+    width: 16px; height: 16px;
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+
+  .search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    color: #fff;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+  .search-input::placeholder { color: rgba(255,255,255,0.55); }
+
+  .search-clear {
+    background: rgba(255,255,255,0.25);
+    border: none;
+    border-radius: 50%;
+    width: 18px; height: 18px;
+    color: #fff;
+    font-size: 11px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* ── FILTER CHIPS ── */
+  .filter-section {
+    padding-bottom: 10px;
+  }
+  .filter-group-label {
+    font-size: 10px;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 0.06em;
+    margin-bottom: 5px;
+  }
+  .filter-scroll {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .filter-scroll::-webkit-scrollbar { display: none; }
+
+  .chip {
+    flex-shrink: 0;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 13px;
+    border-radius: var(--radius-chip);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.82);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Noto Sans KR', sans-serif;
+    white-space: nowrap;
+  }
+  .chip:active { transform: scale(0.95); }
+  .chip.active {
+    background: #fff;
+    color: var(--primary);
+    border-color: #fff;
+    font-weight: 700;
+  }
+
+  /* ── BODY ── */
+  .body {
+    padding: 14px 12px;
+  }
+
+  .section-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-sub);
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .section-title:first-child { margin-top: 0; }
+  .section-count {
+    background: var(--chip-bg);
+    color: var(--text-sub);
+    font-size: 11px;
+    padding: 1px 7px;
+    border-radius: 10px;
+  }
+
+  /* ── COUPON CARD ── */
+  .coupon-card {
+    background: var(--card);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    margin-bottom: 8px;
+    overflow: hidden;
+    animation: slideUp 0.25s ease both;
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .coupon-card.used {
+    opacity: 0.5;
+  }
+
+  .coupon-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 12px;
+  }
+
+  .coupon-thumb {
+    width: 54px; height: 54px;
+    border-radius: 12px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  .coupon-info { flex: 1; min-width: 0; }
+  .coupon-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .coupon-loc {
+    font-size: 11px;
+    color: var(--text-hint);
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .coupon-discount {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--accent-pale);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .coupon-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .status-badge {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 0;
+  }
+  .status-badge.open { color: var(--open-color); }
+  .status-badge.closed { color: var(--closed-color); }
+
+  .fav-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    color: var(--border);
+    transition: transform 0.15s, color 0.15s;
+  }
+  .fav-btn.on { color: var(--fav-on); }
+  .fav-btn:active { transform: scale(1.3); }
+
+  .use-btn {
+    background: var(--primary);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 11px;
+    border-radius: var(--radius-btn);
+    border: none;
+    cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: background 0.15s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .use-btn:active { transform: scale(0.95); }
+  .use-btn.closed { background: var(--border); color: var(--text-hint); cursor: not-allowed; }
+  .use-btn.used-done { background: var(--primary-pale); color: var(--primary); }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--text-hint);
+  }
+  .empty-state .empty-icon { font-size: 20px; font-weight: bold; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+
+  /* ── MODAL OVERLAY ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 999;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+    max-width: 480px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .modal-overlay.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal-sheet {
+    width: 100%;
+    background: var(--card);
+    border-radius: 20px 20px 0 0;
+    padding-bottom: env(safe-area-inset-bottom, 16px);
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.34,1.2,0.64,1);
+  }
+  .modal-overlay.visible .modal-sheet {
+    transform: translateY(0);
+  }
+
+  .modal-handle {
+    width: 36px; height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 10px auto 0;
+  }
+
+  .modal-store-header {
+    background: var(--primary);
+    margin: 12px;
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .modal-store-icon {
+    width: 50px; height: 50px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .modal-store-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 3px;
+  }
+  .modal-store-loc {
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .modal-discount-area {
+    text-align: center;
+    padding: 18px 20px 10px;
+  }
+  .modal-discount-big {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .modal-discount-desc {
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .modal-divider {
+    border: none;
+    border-top: 1.5px dashed var(--border);
+    margin: 14px 20px;
+  }
+
+  .modal-conditions {
+    padding: 0 20px;
+    margin-bottom: 12px;
+  }
+  .modal-conditions-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-hint);
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+  .modal-condition-item {
+    font-size: 12px;
+    color: var(--text-sub);
+    line-height: 1.7;
+    display: flex;
+    gap: 6px;
+  }
+  .modal-condition-item::before {
+    content: '·';
+    color: var(--text-hint);
+    flex-shrink: 0;
+  }
+
+  .modal-key-box {
+    margin: 0 16px 16px;
+    background: var(--primary-pale);
+    border-radius: 12px;
+    padding: 13px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .modal-key-icon { font-size: 14px; font-weight: bold; flex-shrink: 0; color: var(--primary); }
+  .modal-key-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1.4;
+  }
+  .modal-key-sub {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--primary-light);
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    padding: 0 16px 16px;
+  }
+  .modal-close-btn {
+    flex: 1;
+    background: var(--chip-bg);
+    color: var(--text-sub);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 14px 8px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: background 0.15s;
+  }
+  .modal-close-btn:active { background: var(--border); }
+
+  .modal-map-btn {
+    flex: 1.2;
+    background: #e0f2fe;
+    color: #0284c7;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 14px 8px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: background 0.15s;
+  }
+  .modal-map-btn:active { background: #bae6fd; }
+
+  .modal-done-btn {
+    flex: 2;
+    background: var(--primary);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 14px 8px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .modal-done-btn:active { background: var(--primary-light); }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 18px;
+    border-radius: 24px;
+    z-index: 9999;
+    opacity: 0;
+    transition: all 0.25s;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+</style>
 </head>
 <body>
-    <header class="sticky-header">
-        <div class="notice">🔑 결제 시 룸 키를 보여주세요</div>
-        <h1>제휴 매장 쿠폰북</h1>
-    </header>
 
-    <div class="controls">
-        <input type="text" id="search-input" placeholder="매장명 검색 (예: 스테이크)">
-        <select id="location-select">
-            <option value="">🏢 모든 건물 보기</option>
-            <option value="데포 아일랜드">데포 아일랜드 (A~E동)</option>
-            <option value="시사이드">데포 아일랜드 시사이드</option>
-            <option value="아메리칸 데포">아메리칸 데포 (A~C동)</option>
-            <option value="데포 센트럴">데포 센트럴</option>
-            <option value="디스토션">디스토션 (패션/시사이드)</option>
-            <option value="레쿠">레쿠 호텔</option>
-            <option value="힐튼">힐튼 호텔</option>
-            <option value="이온">이온몰 / 기타</option>
-        </select>
-        <div class="categories">
-            <button class="filter-btn active" data-category="all">전체</button>
-            <button class="filter-btn" data-category="맛집">맛집</button>
-            <button class="filter-btn" data-category="카페">카페</button>
-            <button class="filter-btn" data-category="쇼핑">쇼핑</button>
-            <button class="filter-btn" data-category="뷰티">뷰티</button>
-            <button class="filter-btn" data-category="액티비티">액티비티</button>
-        </div>
+<header class="header">
+  <div class="header-top">
+    <div class="header-title">오키나와 쿠폰북</div>
+    <div class="key-badge">[룸키 제시 필수]</div>
+  </div>
+
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+      <circle cx="8.5" cy="8.5" r="5.5"/><line x1="13" y1="13" x2="17" y2="17"/>
+    </svg>
+    <input class="search-input" id="searchInput" type="search" placeholder="매장명 또는 카테고리 검색" autocomplete="off">
+    <button class="search-clear" id="searchClear">✕</button>
+  </div>
+
+  <div class="filter-section">
+    <div class="filter-group-label">카테고리</div>
+    <div class="filter-scroll" id="catFilter">
+      <button class="chip active" data-cat="전체">전체</button>
+      <button class="chip" data-cat="맛집">맛집</button>
+      <button class="chip" data-cat="카페">카페</button>
+      <button class="chip" data-cat="쇼핑">쇼핑</button>
+      <button class="chip" data-cat="뷰티">뷰티</button>
+      <button class="chip" data-cat="액티비티">액티비티</button>
+      <button class="chip" data-cat="기타">기타</button>
     </div>
+  </div>
 
-    <main id="coupon-list"></main>
+  <div class="filter-section">
+    <div class="filter-group-label">건물</div>
+    <div class="filter-scroll" id="bldFilter">
+      <button class="chip active" data-bld="전체">전체</button>
+      <button class="chip" data-bld="데포 아일랜드">데포 아일랜드</button>
+      <button class="chip" data-bld="시사이드">시사이드</button>
+      <button class="chip" data-bld="아메리칸 데포">아메리칸 데포</button>
+      <button class="chip" data-bld="데포 센트럴">데포 센트럴</button>
+      <button class="chip" data-bld="레쿠 호텔">레쿠 호텔</button>
+      <button class="chip" data-bld="기타">기타</button>
+    </div>
+  </div>
+</header>
 
-    <script src="data.js"></script>
-    <script src="script.js"></script>
+<main class="body" id="mainBody">
+
+  <div id="favSection" style="display:none;">
+    <div class="section-title">
+      [즐겨찾기 목록]
+      <span class="section-count" id="favCount">0</span>
+    </div>
+    <div id="favList"></div>
+  </div>
+
+  <div id="allSection">
+    <div class="section-title">
+      [전체 쿠폰]
+      <span class="section-count" id="allCount">0</span>
+    </div>
+    <div id="allList"></div>
+  </div>
+
+  <div class="empty-state no-results" id="emptyState">
+    <div class="empty-icon">[결과 없음]</div>
+    <p>조건에 맞는 결과가 없습니다.</p>
+  </div>
+
+</main>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-sheet" id="modalSheet">
+    <div class="modal-handle"></div>
+    <div class="modal-store-header">
+      <div class="modal-store-icon" id="modalIcon"></div>
+      <div>
+        <div class="modal-store-name" id="modalName"></div>
+        <div class="modal-store-loc" id="modalLoc"></div>
+      </div>
+    </div>
+    <div class="modal-discount-area">
+      <div class="modal-discount-big" id="modalDiscountBig"></div>
+      <div class="modal-discount-desc" id="modalDiscountDesc"></div>
+    </div>
+    <hr class="modal-divider">
+    <div class="modal-conditions">
+      <div class="modal-conditions-title">이용 조건</div>
+      <div id="modalConditions"></div>
+    </div>
+    <div class="modal-key-box">
+      <div class="modal-key-icon">[안내]</div>
+      <div>
+        <div class="modal-key-text">룸 키를 직원에게 보여주세요.</div>
+        <div class="modal-key-sub">베셀 &amp; 레쿠 오키나와 투숙 고객 전용 혜택</div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-close-btn" id="modalClose">닫기</button>
+      <button class="modal-map-btn" id="modalMap">지도 보기</button>
+      <button class="modal-done-btn" id="modalDone">✓ 사용 완료</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──
+const stores = [
+  // 호텔/맛집/식당
+  { id: 1, name: '힐튼 오키나와 스리윤', cat: '맛집', bld: '기타', detail: '힐튼 리조트 1F', emoji: '식당', bg: '#ffe8e8', discount: '결제 시 15% 할인', discountBig: '15%', discountDesc: '뷔페 레스토랑 결제 금액 15% 할인', hours: '11:30~15:00 / 17:30~21:30', conditions: ['사전 예약 권장', '룸키 제시 필수'], open: true },
+  { id: 2, name: '힐튼 오키나와 코렌테', cat: '맛집', bld: '기타', detail: '힐튼 리조트 1F', emoji: '식당', bg: '#ffe8e8', discount: '결제 시 15% 할인', discountBig: '15%', discountDesc: '이탈리안 레스토랑 결제 금액 15% 할인', hours: '11:30~15:00 / 17:30~22:30', conditions: ['사전 예약 권장', '룸키 제시 필수'], open: true },
+  { id: 3, name: '타코라이스 카페 키지무나', cat: '맛집', bld: '데포 아일랜드', detail: 'C동 2F', emoji: '식당', bg: '#fff0d8', discount: '음료 1잔 서비스', discountBig: '무료', discountDesc: '식사 고객에게 소프트드링크 1잔 서비스 (최대 8명)', hours: '11:00~22:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 4, name: '카메젠 식당', cat: '맛집', bld: '데포 아일랜드', detail: 'C동 2F', emoji: '식당', bg: '#e8f4e8', discount: '결제 시 5% 할인', discountBig: '5%', discountDesc: '오키나와 소바 결제 금액 5% 할인', hours: '11:00~14:45 / 17:00~21:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 5, name: '츄라하마 식당', cat: '맛집', bld: '시사이드', detail: '3F', emoji: '식당', bg: '#fff0d8', discount: '음료 1잔 서비스', discountBig: '무료', discountDesc: '특정 음료 1잔 서비스 (최대 10잔)', hours: '12:00~15:30 / 17:00~23:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 6, name: '차탄 돈치', cat: '맛집', bld: '시사이드', detail: '3F', emoji: '식당', bg: '#ffe8e8', discount: '과실초 1잔 서비스', discountBig: '무료', discountDesc: '오리지널 과실초 1잔 증정', hours: '17:00~23:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 7, name: '미하마 돈치', cat: '맛집', bld: '데포 센트럴', detail: '2F', emoji: '식당', bg: '#ffe8e8', discount: '과실초 1잔 서비스', discountBig: '무료', discountDesc: '오리지널 과실초 1잔 증정', hours: '17:00~23:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 8, name: '시만츄', cat: '맛집', bld: '레쿠 호텔', detail: '프리미어 2F', emoji: '식당', bg: '#e8f4e8', discount: '바다포도 1개 서비스', discountBig: '무료', discountDesc: '식사 시 바다포도 1개 증정', hours: '16:00~22:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 9, name: '카나산야', cat: '맛집', bld: '데포 센트럴', detail: '3F', emoji: '식당', bg: '#fff0d8', discount: '음료 1잔 서비스', discountBig: '무료', discountDesc: '소프트드링크 1잔 무료', hours: '17:00~23:00 (월 휴무)', conditions: ['룸키 제시 필수'], open: true },
+  { id: 10, name: '푼카 델리카', cat: '맛집', bld: '기타', detail: '1F', emoji: '식당', bg: '#ffe8e8', discount: '결제 시 10% 할인', discountBig: '10%', discountDesc: '결제 금액 10% 할인 (주류 제외)', hours: '11:00~18:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 11, name: '오키나와소바 키세키', cat: '맛집', bld: '시사이드', detail: '1F', emoji: '식당', bg: '#e8f4e8', discount: '토핑 무료 서비스', discountBig: '무료', discountDesc: '특정 토핑 1가지 무료 추가', hours: '11:00~21:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 12, name: '스나가와 제면소', cat: '맛집', bld: '기타', detail: '플라자 F 1F', emoji: '식당', bg: '#e8f4e8', discount: '곱빼기 무료', discountBig: '무료', discountDesc: '곱빼기 무료 및 어린이 소바 무료', hours: '11:00~00:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 13, name: 'A사인 타코라이스', cat: '맛집', bld: '시사이드', detail: '1F', emoji: '식당', bg: '#fff0d8', discount: '산핀차 서비스', discountBig: '무료', discountDesc: '2,500엔 이상 구매 시 산핀차 서비스', hours: '09:00~21:00', conditions: ['룸키 제시 필수'], open: true },
+  
+  // 스테이크/버거/카레
+  { id: 14, name: '점보 스테이크 한스 미하마점', cat: '맛집', bld: '데포 아일랜드', detail: 'A동 2F', emoji: '식당', bg: '#ffe8e8', discount: '결제 시 10% 할인', discountBig: '10%', discountDesc: '전체 결제 금액 10% 할인', hours: '11:00~23:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 15, name: 'BB 스테이크', cat: '맛집', bld: '데포 아일랜드', detail: 'A동 2F', emoji: '식당', bg: '#ffe8e8', discount: '음료 or 토핑 서비스', discountBig: '무료', discountDesc: '철판 1개당 음료 또는 토핑 서비스', hours: '11:30~21:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 16, name: '블루오션 스테이크', cat: '맛집', bld: '기타', detail: '51-2 2F', emoji: '식당', bg: '#ffe8e8', discount: '웰컴 드링크 서비스', discountBig: '무료', discountDesc: '식사 고객에게 웰컴 드링크 1잔 제공', hours: '17:00~23:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 17, name: '스테이크하우스 88', cat: '맛집', bld: '기타', detail: 'Cat\'s Chatan 2F', emoji: '식당', bg: '#ffe8e8', discount: '드링크바 무료', discountBig: '무료', discountDesc: '드링크바 1잔 무료', hours: '11:00~23:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 18, name: 'BEEFY\'S 스테이크', cat: '맛집', bld: '시사이드', detail: '4F', emoji: '식당', bg: '#ffe8e8', discount: '결제 시 10% 할인', discountBig: '10%', discountDesc: '전체 결제 금액 10% 할인', hours: '11:30~15:00 / 17:00~22:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 19, name: '점보 스테이크 한스 센트럴점', cat: '맛집', bld: '데포 센트럴', detail: '2F', emoji: '식당', bg: '#ffe8e8', discount: '10% 할인 or 음료', discountBig: '10%', discountDesc: '10% 할인 또는 음료 1잔 서비스', hours: '11:00~23:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 20, name: 'RIPPLE 와인바', cat: '맛집', bld: '시사이드', detail: '5F', emoji: '식당', bg: '#ffe8e8', discount: '사진 & 아이스크림', discountBig: '무료', discountDesc: '폴라로이드 1장 무료 및 블루씰 아이스크림 증정', hours: '11:00~00:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 21, name: '아타비스 버거', cat: '맛집', bld: '시사이드', detail: '1F', emoji: '식당', bg: '#fff0d8', discount: '토핑 1개 서비스', discountBig: '무료', discountDesc: '햄버거 주문 시 토핑 1개 증정', hours: '09:00~15:00 / 17:00~21:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 22, name: 'JETTA 버거', cat: '맛집', bld: '기타', detail: '패션빌딩 2F', emoji: '식당', bg: '#fff0d8', discount: '아메리카노 1잔', discountBig: '무료', discountDesc: '버거 주문 시 아메리카노 1잔 서비스', hours: '11:00~22:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 23, name: 'BRUAL', cat: '맛집', bld: '시사이드', detail: '2F', emoji: '식당', bg: '#fff0d8', discount: '결제 시 10% 할인', discountBig: '10%', discountDesc: '전체 결제 금액 10% 할인', hours: '10:00~21:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 24, name: 'Naughty By Nature', cat: '맛집', bld: '기타', detail: '51-3 1F', emoji: '식당', bg: '#fff0d8', discount: '음료 1잔 서비스', discountBig: '무료', discountDesc: '소프트드링크 1잔 무료', hours: '11:00~21:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 25, name: 'BOLLYWOOD DREAMS', cat: '맛집', bld: '데포 아일랜드', detail: 'A동 2F', emoji: '식당', bg: '#e8f4e8', discount: '결제 시 10% 할인', discountBig: '10%', discountDesc: '인도 카레 10% 할인', hours: '11:00~14:30 / 17:00~21:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 26, name: 'Horizon Curry works', cat: '맛집', bld: '시사이드', detail: '2F', emoji: '식당', bg: '#e8f4e8', discount: '결제 시 10% 할인', discountBig: '10%', discountDesc: '전체 결제 금액 10% 할인', hours: '11:00~22:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 27, name: 'BOLLYWOOD Jewel', cat: '맛집', bld: '기타', detail: '시사이드 스퀘어 1F', emoji: '식당', bg: '#e8f4e8', discount: '결제 시 10% 할인', discountBig: '10%', discountDesc: '전체 결제 금액 10% 할인', hours: '11:00~15:00 / 17:00~21:30', conditions: ['룸키 제시 필수'], open: true },
+
+  // 카페/디저트
+  { id: 28, name: '봉고 앤 앵커', cat: '카페', bld: '기타', detail: '베셀 별관 1F', emoji: '카페', bg: '#fdf5e8', discount: '결제 시 10% 할인', discountBig: '10%', discountDesc: '전체 결제 금액 10% 할인', hours: '08:00~22:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 29, name: 'Seaside cafe Hanon', cat: '카페', bld: '기타', detail: '오크패션빌딩 2F', emoji: '카페', bg: '#e8f8ff', discount: '아이스크림 서비스', discountBig: '무료', discountDesc: '음식 주문 시 아이스크림 증정', hours: '09:00~17:00 (평일)', conditions: ['룸키 제시 필수'], open: true },
+  { id: 30, name: 'CLIMAX COFFEE', cat: '카페', bld: '시사이드', detail: '1F', emoji: '카페', bg: '#fdf5e8', discount: '결제 시 10% 할인', discountBig: '10%', discountDesc: '현금 결제 시 10% 할인', hours: '09:30~22:00', conditions: ['현금 결제 한정', '룸키 제시 필수'], open: true },
+  { id: 31, name: 'Café & Bar MaiMalu', cat: '카페', bld: '시사이드', detail: '1F', emoji: '카페', bg: '#e8f8ff', discount: '음료 1잔 서비스', discountBig: '무료', discountDesc: '식사 시 칵테일 또는 음료 1잔 무료', hours: '15:00~24:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 32, name: '지바고 커피 (ZHYVAGO)', cat: '카페', bld: '레쿠 호텔', detail: '프리미어 1F', emoji: '카페', bg: '#fdf5e8', discount: '결제 시 10% 할인', discountBig: '10%', discountDesc: '레쿠 숙박객 한정 전체 10% 할인', hours: '07:00~22:00', conditions: ['레쿠 호텔 투숙객 한정', '룸키 제시 필수'], open: true },
+  { id: 33, name: 'CARAVANA 아이스크림', cat: '카페', bld: '레쿠 호텔', detail: '프리미어 1F', emoji: '카페', bg: '#e8fff0', discount: '결제 시 10% 할인', discountBig: '10%', discountDesc: '레쿠 숙박객 한정 전체 10% 할인', hours: '11:00~22:00', conditions: ['레쿠 호텔 투숙객 한정', '룸키 제시 필수'], open: true },
+  { id: 34, name: 'ONIYANMA COFFEE', cat: '카페', bld: '기타', detail: '패션빌딩 2F', emoji: '카페', bg: '#fdf5e8', discount: '아이스크림 증정', discountBig: '무료', discountDesc: '음료 주문 시 아이스크림 증정', hours: '09:30~19:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 35, name: '블루씰 아이스크림', cat: '카페', bld: '시사이드', detail: '2F', emoji: '카페', bg: '#e8f8ff', discount: '주니어 스쿱 무료', discountBig: '무료', discountDesc: '싱글 사이즈 주문 시 스쿱 추가', hours: '11:00~21:00', conditions: ['싱글 사이즈 한정', '룸키 제시 필수'], open: true },
+  { id: 36, name: '바움쿠헨 산토미', cat: '카페', bld: '기타', detail: '오크패션빌딩 1F', emoji: '카페', bg: '#fdf5e8', discount: '결제 시 5% 할인', discountBig: '5%', discountDesc: '1,000엔 이상 결제 시 5% 할인', hours: '10:00~18:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 37, name: 'KAME ANDAGI', cat: '카페', bld: '레쿠 호텔', detail: '메인 1F', emoji: '카페', bg: '#fdf5e8', discount: '사타안다기 증정', discountBig: '무료', discountDesc: '1,000엔 이상 결제 시 사타안다기 1개 서비스', hours: '11:00~20:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 38, name: '감미처 가마쿠라', cat: '카페', bld: '데포 아일랜드', detail: 'A동 1F', emoji: '카페', bg: '#e8fff0', discount: '흑밀 무료 증정', discountBig: '무료', discountDesc: '포장용 와라비모치 구매 시 흑밀 증정', hours: '10:30~20:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 39, name: 'BUNBUN 과일샌드', cat: '카페', bld: '기타', detail: '플라자 F 1F', emoji: '카페', bg: '#fdf5e8', discount: '음료 1잔 무료', discountBig: '무료', discountDesc: '식사 고객에게 음료 1잔 서비스', hours: '08:00~20:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 40, name: 'ISOLA 젤라또', cat: '카페', bld: '시사이드', detail: '1F', emoji: '카페', bg: '#e8f8ff', discount: '시쿠와사 주스', discountBig: '무료', discountDesc: '1,000엔 이상 결제 시 주스 서비스', hours: '10:30~20:00', conditions: ['룸키 제시 필수'], open: true },
+
+  // 일본식/양식/이자카야
+  { id: 41, name: '아구노 카쿠레가', cat: '맛집', bld: '기타', detail: '2-2-2', emoji: '식당', bg: '#e8f4e8', discount: '결제 시 10% 할인', discountBig: '10%', discountDesc: '샤브샤브 결제 시 10% 할인', hours: '17:00~22:30', conditions: ['룸키 제시 필수'], open: true },
+  { id: 42, name: '야키니쿠 텐진', cat: '맛집', bld: '아메리칸 데포', detail: 'C동 2F', emoji: '식당', bg: '#e8f4e8', discount: '음료 1잔 서비스', discountBig: '무료', discountDesc: '음료 1잔 무료 제공', hours: '11:30~15:00 / 17:00~23:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 43, name: '야키니쿠 후쿠규', cat: '맛집', bld: '데포 아일랜드', detail: 'E동 2F', emoji: '식당', bg: '#e8f4e8', discount: '음료 1잔 서비스', discountBig: '무료', discountDesc: '최대 4인까지 음료 1잔 서비스', hours: '11:00~23:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 44, name: '차탄 스팀 씨푸드', cat: '맛집', bld: '기타', detail: '51-2 3F', emoji: '식당', bg: '#e8f4e8', discount: '웰컴 드링크', discountBig: '무료', discountDesc: '웰컴 드링크 1잔 무료', hours: '11:00~23:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 45, name: '규부시', cat: '맛집', bld: '데포 센트럴', detail: '6F', emoji: '식당', bg: '#e8f4e8', discount: '결제 시 10% 할인', discountBig: '10%', discountDesc: '전체 결제 금액 10% 할인', hours: '17:00~23:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 46, name: '야키니쿠 리키오', cat: '맛집', bld: '기타', detail: '패션빌딩 2F', emoji: '식당', bg: '#e8f4e8', discount: '음료 or 디저트', discountBig: '무료', discountDesc: '음료 또는 디저트 1가지 서비스', hours: '17:00~23:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 47, name: '지루야', cat: '맛집', bld: '기타', detail: 'Cat\'s Chatan 1F', emoji: '식당', bg: '#e8f4e8', discount: '음료 1잔 서비스', discountBig: '무료', discountDesc: '음료 1잔 무료 제공', hours: '11:00~15:30 / 17:00~01:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 48, name: 'SUNRISE 치즈스테이크', cat: '맛집', bld: '기타', detail: '시사이드 스퀘어 1F', emoji: '식당', bg: '#fff0d8', discount: '결제 시 15% 할인', discountBig: '15%', discountDesc: '전체 결제 금액 15% 할인', hours: '11:00~22:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 49, name: '함박스테이크 마스오', cat: '맛집', bld: '기타', detail: 'Cat\'s Chatan', emoji: '식당', bg: '#fff0d8', discount: '결제 시 10% 할인', discountBig: '10%', discountDesc: '전체 결제 금액 10% 할인', hours: '11:30~21:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 50, name: 'SOLIS GRANDE', cat: '맛집', bld: '기타', detail: '베셀 별관 1F', emoji: '식당', bg: '#fff0d8', discount: '아이스크림 서비스', discountBig: '무료', discountDesc: '식사 시 아이스크림 3종 세트 증정', hours: '11:00~16:00 / 17:00~22:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 51, name: '레드랍스터', cat: '맛집', bld: '기타', detail: '8-10', emoji: '식당', bg: '#ffe8e8', discount: '음료/주류 1잔', discountBig: '무료', discountDesc: '글라스 맥주/와인 또는 음료 증정', hours: '11:00~22:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 52, name: '토니로마스', cat: '맛집', bld: '기타', detail: '8-7', emoji: '식당', bg: '#ffe8e8', discount: '음료/맥주 1잔', discountBig: '무료', discountDesc: '소프트드링크 또는 맥주 1잔 증정', hours: '11:00~15:00 / 17:00~21:30', conditions: ['룸키 제시 필수'], open: true },
+  { id: 53, name: '카프리초사', cat: '맛집', bld: '기타', detail: '8-7', emoji: '식당', bg: '#fff0d8', discount: '음료/주류 1잔', discountBig: '무료', discountDesc: '소프트드링크 또는 맥주/와인 증정', hours: '11:00~21:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 54, name: 'Pocke Farm', cat: '맛집', bld: '아메리칸 데포', detail: 'B동 1F', emoji: '식당', bg: '#fff0d8', discount: '음료 할인', discountBig: '100엔', discountDesc: '소프트드링크 100엔 할인', hours: '10:00~21:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 55, name: 'BENSON\'S 핫도그', cat: '맛집', bld: '아메리칸 데포', detail: 'B동 1F', emoji: '식당', bg: '#fff0d8', discount: '토핑 무료', discountBig: '무료', discountDesc: '토핑 1가지 무료 추가', hours: '10:00~21:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 56, name: '타코로코', cat: '맛집', bld: '아메리칸 데포', detail: 'B동 2F', emoji: '식당', bg: '#fff0d8', discount: '음료 1잔 서비스', discountBig: '무료', discountDesc: '소프트드링크 1잔 무료 (최대 8명)', hours: '11:00~22:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 57, name: 'Guts 치킨', cat: '맛집', bld: '데포 센트럴', detail: '2F', emoji: '식당', bg: '#fff0d8', discount: '음료 증정', discountBig: '무료', discountDesc: '치킨 구매 시 소프트드링크 증정', hours: '12:00~21:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 58, name: '바오바오 자 엘리펀트', cat: '맛집', bld: '기타', detail: '8-10', emoji: '식당', bg: '#e8f4e8', discount: '결제 시 5% 할인', discountBig: '5%', discountDesc: '태국 음식 결제 시 5% 할인', hours: '12:00~14:30 / 17:00~21:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 59, name: 'LaPesciolina', cat: '맛집', bld: '레쿠 호텔', detail: '프리미어 1F', emoji: '식당', bg: '#fff0d8', discount: '결제 시 10% 할인', discountBig: '10%', discountDesc: '3,000엔 이상 결제 시 10% 할인', hours: '18:00~23:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 60, name: 'Ariccia 피자', cat: '맛집', bld: '시사이드', detail: '1F', emoji: '식당', bg: '#fff0d8', discount: '음료 200엔 할인', discountBig: '200엔', discountDesc: '식사 시 모든 음료 200엔 할인', hours: '11:00~16:00 / 17:30~22:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 61, name: 'EL PASO 메히칸', cat: '맛집', bld: '데포 아일랜드', detail: 'D동 2F', emoji: '식당', bg: '#fff0d8', discount: '음료 200엔 할인', discountBig: '200엔', discountDesc: '모든 음료 200엔 할인', hours: '11:00~15:00 / 16:30~22:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 62, name: 'Oh Yeah! 바', cat: '맛집', bld: '기타', detail: '오크패션빌딩 2F', emoji: '식당', bg: '#e8f4e8', discount: '하브슈 1잔', discountBig: '무료', discountDesc: '음료 주문 시 오키나와 뱀술 1잔 제공', hours: '17:00~03:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 63, name: '이자카야 사이(Sai)', cat: '맛집', bld: '기타', detail: '구르메관 2F', emoji: '식당', bg: '#e8f4e8', discount: '안주 1품 서비스', discountBig: '무료', discountDesc: '1팀당 안주 1가지 서비스', hours: '17:00~02:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 64, name: '시라카와 상점', cat: '맛집', bld: '기타', detail: 'Cat\'s Chatan', emoji: '식당', bg: '#e8f4e8', discount: '2잔째 음료 증정', discountBig: '무료', discountDesc: '두 번째 음료 무료 증정', hours: '17:00~23:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 65, name: '아이리시 펍 Howdy', cat: '맛집', bld: '데포 센트럴', detail: '5F', emoji: '식당', bg: '#e8f4e8', discount: '안주 1품 선물', discountBig: '무료', discountDesc: '선택 안주 1가지 무료 제공', hours: '17:00~01:00', conditions: ['룸키 제시 필수'], open: true },
+
+  // 쇼핑
+  { id: 66, name: 'RUN OKI', cat: '쇼핑', bld: '데포 아일랜드', detail: 'B동 1F', emoji: '쇼핑', bg: '#f0eaff', discount: '결제 시 10% 할인', discountBig: '10%', discountDesc: '캐주얼 의류 10% 할인', hours: '10:00~21:00', conditions: ['세일 상품 제외', '룸키 제시 필수'], open: true },
+  { id: 67, name: 'Respect', cat: '쇼핑', bld: '기타', detail: '시사이드 스퀘어 1F', emoji: '쇼핑', bg: '#f0eaff', discount: '결제 시 5% 할인', discountBig: '5%', discountDesc: '전체 5% 할인', hours: '11:00~21:00', conditions: ['세일 상품 제외', '룸키 제시 필수'], open: true },
+  { id: 68, name: 'SKIP', cat: '쇼핑', bld: '아메리칸 데포', detail: 'B동 1F', emoji: '쇼핑', bg: '#f0eaff', discount: '결제 시 5% 할인', discountBig: '5%', discountDesc: '아동복 5% 할인', hours: '11:00~20:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 69, name: '로열 오키나완', cat: '쇼핑', bld: '데포 아일랜드', detail: 'E동 1F', emoji: '쇼핑', bg: '#f0eaff', discount: '굿즈 선물', discountBig: '무료', discountDesc: '3,000엔 이상 결제 시 굿즈 증정', hours: '11:00~20:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 70, name: '모자점 Flava', cat: '쇼핑', bld: '데포 아일랜드', detail: 'C동 1F', emoji: '쇼핑', bg: '#f0eaff', discount: '결제 시 10% 할인', discountBig: '10%', discountDesc: '전체 10% 할인', hours: '10:00~22:00', conditions: ['일부 제외', '룸키 제시 필수'], open: true },
+  { id: 71, name: 'Dazzle 패션', cat: '쇼핑', bld: '기타', detail: '패션빌딩 1F', emoji: '쇼핑', bg: '#f0eaff', discount: '결제 시 10% 할인', discountBig: '10%', discountDesc: '전체 10% 할인', hours: '10:00~21:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 72, name: 'Southern Deli AGOO', cat: '쇼핑', bld: '시사이드', detail: '1F', emoji: '쇼핑', bg: '#f0eaff', discount: '엽서 선물', discountBig: '무료', discountDesc: '3,000엔 이상 결제 시 오리지널 엽서 증정', hours: '11:00~19:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 73, name: '초시치야 차탄 1호점', cat: '쇼핑', bld: '데포 아일랜드', detail: 'A동 1F', emoji: '쇼핑', bg: '#f0eaff', discount: '책갈피 선물', discountBig: '무료', discountDesc: '4,000엔 이상 구매 시 책갈피 증정', hours: '10:00~20:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 74, name: '아마츠부 (Amatsubu)', cat: '쇼핑', bld: '데포 아일랜드', detail: 'A동 1F', emoji: '쇼핑', bg: '#f0eaff', discount: '결제 시 5% 할인', discountBig: '5%', discountDesc: '3,000엔 이상 현금 결제 시 5% 할인', hours: '12:00~21:00', conditions: ['현금 결제 한정', '룸키 제시 필수'], open: true },
+  { id: 75, name: 'Southerly', cat: '쇼핑', bld: '시사이드', detail: '1F', emoji: '쇼핑', bg: '#f0eaff', discount: '결제 시 10% 할인', discountBig: '10%', discountDesc: '유리 액세서리 10% 할인', hours: '11:30~19:30', conditions: ['룸키 제시 필수'], open: true },
+  { id: 76, name: 'Splash 오키나와', cat: '쇼핑', bld: '기타', detail: '패션빌딩 1F', emoji: '쇼핑', bg: '#f0eaff', discount: '잡화 선물', discountBig: '무료', discountDesc: '3,000엔 이상 결제 시 오리지널 잡화 증정', hours: '10:00~21:30', conditions: ['룸키 제시 필수'], open: true },
+  { id: 77, name: '초시치야 차탄 2호점', cat: '쇼핑', bld: '데포 센트럴', detail: '1F', emoji: '쇼핑', bg: '#f0eaff', discount: '책갈피 선물', discountBig: '무료', discountDesc: '4,000엔 이상 구매 시 책갈피 증정', hours: '11:00~20:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 78, name: '오하나 (OHANA)', cat: '쇼핑', bld: '데포 아일랜드', detail: 'A동 1F', emoji: '쇼핑', bg: '#f0eaff', discount: '500엔 할인', discountBig: '500엔', discountDesc: '2,000엔 이상 시 500엔 할인 또는 래핑', hours: '11:00~21:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 79, name: '라군 (lagoon)', cat: '쇼핑', bld: '데포 아일랜드', detail: 'A동 1F', emoji: '쇼핑', bg: '#f0eaff', discount: '결제 시 5% 할인', discountBig: '5%', discountDesc: '전체 결제 금액 5% 할인', hours: '10:00~21:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 80, name: '오키나와 마켓', cat: '쇼핑', bld: '시사이드', detail: '1F', emoji: '쇼핑', bg: '#fff0f5', discount: '굿즈 선물', discountBig: '무료', discountDesc: '3,000엔 이상 결제 시 오리지널 굿즈 증정', hours: '11:00~20:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 81, name: '언덕의 일번송', cat: '쇼핑', bld: '기타', detail: '드래곤 팰리스 1F', emoji: '쇼핑', bg: '#fff0f5', discount: '배송 무료 등', discountBig: '무료', discountDesc: '8,000엔 이상 무료배송 또는 에코백 증정', hours: '10:00~22:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 82, name: 'OKINAWAYA', cat: '쇼핑', bld: '아메리칸 데포', detail: 'A동 1F', emoji: '쇼핑', bg: '#fff0f5', discount: '별모래 선물', discountBig: '무료', discountDesc: '1,000엔 이상 구매 시 별모래 증정', hours: '09:30~21:30', conditions: ['룸키 제시 필수'], open: true },
+  { id: 83, name: '오키나와야 아와모리구라', cat: '쇼핑', bld: '아메리칸 데포', detail: 'A동 1F', emoji: '쇼핑', bg: '#fff0f5', discount: '미니보틀 증정', discountBig: '무료', discountDesc: '3,000엔 이상 주류 구매 시 미니보틀 증정', hours: '10:00~21:30', conditions: ['룸키 제시 필수'], open: true },
+  { id: 84, name: '파인애플 파인애플', cat: '쇼핑', bld: '데포 센트럴', detail: '1F', emoji: '쇼핑', bg: '#fff0f5', discount: '아이스크림 증정', discountBig: '무료', discountDesc: '3,000엔 이상 시 소프트아이스크림 1개 증정', hours: '11:00~20:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 85, name: 'made in okinawa', cat: '쇼핑', bld: '데포 센트럴', detail: '1F', emoji: '쇼핑', bg: '#fff0f5', discount: '결제 시 5% 할인', discountBig: '5%', discountDesc: '3,000엔 이상 시 결제 금액 5% 할인', hours: '11:00~19:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 86, name: '데포 아일랜드 잡화점', cat: '쇼핑', bld: '데포 아일랜드', detail: 'A동 1F', emoji: '쇼핑', bg: '#fff0f5', discount: '수입굿즈 선물', discountBig: '무료', discountDesc: '3,000엔 이상 결제 시 수입 굿즈 증정', hours: '10:00~21:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 87, name: '미하마 소라(SORA)', cat: '쇼핑', bld: '데포 아일랜드', detail: 'A동 1F', emoji: '쇼핑', bg: '#fff0f5', discount: '소품함 선물', discountBig: '무료', discountDesc: '5,000엔 이상 구매 시 소품함 증정', hours: '12:00~21:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 88, name: '해안창고 21', cat: '쇼핑', bld: '데포 아일랜드', detail: 'B동 1F', emoji: '쇼핑', bg: '#fff0f5', discount: '결제 시 5% 할인', discountBig: '5%', discountDesc: '전체 결제 5% 할인 (음식/일부 제외)', hours: '10:30~20:00', conditions: ['현금 결제 한정', '룸키 제시 필수'], open: true },
+  { id: 89, name: '야마추 혼포', cat: '쇼핑', bld: '데포 아일랜드', detail: 'E동 1F', emoji: '쇼핑', bg: '#fff0f5', discount: '키홀더 선물', discountBig: '무료', discountDesc: '오리지널 키홀더 1개 증정', hours: '10:00~20:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 90, name: 'SOHO 잡화점', cat: '쇼핑', bld: '아메리칸 데포', detail: 'C동 1F', emoji: '쇼핑', bg: '#fff0f5', discount: '수입굿즈 선물', discountBig: '무료', discountDesc: '3,000엔 이상 결제 시 수입 굿즈 증정', hours: '11:00~20:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 91, name: '아메리칸 데포 잡화점', cat: '쇼핑', bld: '아메리칸 데포', detail: 'A동 1F', emoji: '쇼핑', bg: '#fff0f5', discount: '수입굿즈 선물', discountBig: '무료', discountDesc: '3,000엔 이상 결제 시 수입 굿즈 증정', hours: '10:00~21:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 92, name: '레더 베이스', cat: '쇼핑', bld: '데포 아일랜드', detail: 'E동 1F', emoji: '쇼핑', bg: '#fff0f5', discount: '가죽소품 선물', discountBig: '무료', discountDesc: '5,000엔 이상 가방 구매 시 소품 증정', hours: '10:00~21:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 93, name: 'LA STORE 레더', cat: '쇼핑', bld: '데포 아일랜드', detail: 'E동 1F', emoji: '쇼핑', bg: '#fff0f5', discount: '키커버 선물', discountBig: '무료', discountDesc: '5,000엔 이상 결제 시 키커버 증정', hours: '11:00~21:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 94, name: 'CASARINA', cat: '쇼핑', bld: '기타', detail: '51-3', emoji: '쇼핑', bg: '#fff0f5', discount: '결제 시 5% 할인', discountBig: '5%', discountDesc: '오리지널 잡화 5% 할인', hours: '11:00~19:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 95, name: '남국잡화 티다', cat: '쇼핑', bld: '레쿠 호텔', detail: '메인 1F', emoji: '쇼핑', bg: '#fff0f5', discount: '스티커 선물', discountBig: '무료', discountDesc: '1,000엔 이상 구매 시 스티커 증정', hours: '12:00~19:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 96, name: '슈리비누', cat: '쇼핑', bld: '데포 아일랜드', detail: 'A동 1F', emoji: '쇼핑', bg: '#fff0f5', discount: '샘플 선물', discountBig: '무료', discountDesc: '스킨케어 샘플 증정', hours: '10:00~20:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 107, name: 'OKICHU 시마조리', cat: '쇼핑', bld: '데포 아일랜드', detail: 'E동 1F', emoji: '쇼핑', bg: '#fff0f5', discount: '키홀더 선물', discountBig: '무료', discountDesc: '오리지널 조리 구매 및 가공 시 키홀더 증정', hours: '11:00~20:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 108, name: '칸자시야', cat: '쇼핑', bld: '아메리칸 데포', detail: 'C동 1F', emoji: '쇼핑', bg: '#fff0f5', discount: '소품 선물', discountBig: '무료', discountDesc: '3,000엔 이상 구매 시 소품 증정', hours: '12:00~21:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 109, name: 'Ryu Spa 오키나와', cat: '쇼핑', bld: '데포 센트럴', detail: '1F', emoji: '쇼핑', bg: '#fff0f5', discount: '마스크시트 증정', discountBig: '무료', discountDesc: '1,100엔 이상 구매 시 마스크팩 1장 증정', hours: '10:00~21:00', conditions: ['룸키 제시 필수'], open: true },
+
+  // 액티비티/뷰티/기타
+  { id: 97, name: 'GIGO 게임센터', cat: '액티비티', bld: '기타', detail: '시사이드 스퀘어 1F', emoji: '체험', bg: '#d8eeff', discount: '메달 1.5배', discountBig: '1.5배', discountDesc: '메달 대여 매수 1.5배 증량', hours: '10:00~24:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 98, name: 'ENAGIC BOWL', cat: '액티비티', bld: '기타', detail: '시사이드 스퀘어 2F', emoji: '체험', bg: '#d8eeff', discount: '1게임 할인', discountBig: '할인', discountDesc: '1게임당 할인 요금 적용 (일반요금 시)', hours: '10:00~24:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 99, name: '조이 정글 게임랜드', cat: '액티비티', bld: '기타', detail: '드래곤 팰리스', emoji: '체험', bg: '#d8eeff', discount: '메달 20개 등', discountBig: '무료', discountDesc: '메달 20개 또는 인형뽑기 1회 무료', hours: '10:00~24:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 100, name: '츄라유 (Terme VILLA)', cat: '액티비티', bld: '기타', detail: '북곡정 미하마 2번지', emoji: '체험', bg: '#d8eeff', discount: '타올 대여 무료', discountBig: '무료', discountDesc: '목욕 및 페이스타올 무료 대여', hours: '07:00~23:00 (목욕)', conditions: ['특정일 제외', '룸키 제시 필수'], open: true },
+  { id: 101, name: '라 레이아 (La leia)', cat: '기타', bld: '기타', detail: '15-31', emoji: '서비스', bg: '#ddf2f0', discount: '펫호텔 5% 할인', discountBig: '5%', discountDesc: '펫호텔 이용 요금 5% 할인', hours: '10:00~19:30', conditions: ['룸키 제시 필수'], open: true },
+  { id: 102, name: '매직 오션', cat: '액티비티', bld: '데포 센트럴', detail: '4F', emoji: '체험', bg: '#d8eeff', discount: '입장료 할인', discountBig: '500엔', discountDesc: '성인 3,000엔->2,500엔 / 아동 할인', hours: '12:00~23:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 103, name: '에스테틱 SHURO', cat: '뷰티', bld: '기타', detail: '빌라 차탄 1F', emoji: '뷰티', bg: '#ffeaf6', discount: '마사지 10% 할인', discountBig: '10%', discountDesc: '전 마사지 메뉴 10% 할인', hours: '11:00~19:30', conditions: ['룸키 제시 필수'], open: true },
+  { id: 104, name: 'm-grace\'s', cat: '뷰티', bld: '시사이드', detail: '2F', emoji: '뷰티', bg: '#ffeaf6', discount: '정가 메뉴 10% 할인', discountBig: '10%', discountDesc: '에스테틱 정가 메뉴 10% 할인', hours: '11:00~20:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 105, name: '러브 네일 오키나와', cat: '뷰티', bld: '시사이드', detail: '3F', emoji: '뷰티', bg: '#ffeaf6', discount: '음료 1잔 서비스', discountBig: '무료', discountDesc: '시술 고객에게 음료 1잔 서비스', hours: '10:00~20:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 106, name: '셀레스트 스파', cat: '뷰티', bld: '레쿠 호텔', detail: '메인 8F', emoji: '뷰티', bg: '#ffeaf6', discount: '특별가 적용', discountBig: '특별가', discountDesc: '숏 바디 45분 코스 12,650엔 특별가', hours: '13:00~22:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 110, name: '소드피쉬 마린투어', cat: '액티비티', bld: '기타', detail: '온나손', emoji: '체험', bg: '#d8eeff', discount: '각종 플랜 15% 할인', discountBig: '15%', discountDesc: '푸른동굴 코스 및 마린 액티비티 할인', hours: '08:00~20:00', conditions: ['룸키 제시 필수'], open: true },
+  { id: 111, name: '슈하리 바이크', cat: '액티비티', bld: '레쿠 호텔', detail: '프리미어 1F', emoji: '체험', bg: '#d8eeff', discount: '자전거 대여 할인', discountBig: '10%', discountDesc: '자전거 렌탈 10% 할인 (사진 포함)', hours: '11:00~18:00', conditions: ['룸키 제시 필수'], open: true }
+];
+
+// ── STATE ──
+const state = {
+  cat: '전체',
+  bld: '전체',
+  query: '',
+  favs: new Set(JSON.parse(localStorage.getItem('favs') || '[]')),
+  used: new Set(JSON.parse(localStorage.getItem('used') || '[]')),
+  activeModalId: null
+};
+
+function saveFavs() {
+  localStorage.setItem('favs', JSON.stringify([...state.favs]));
+}
+function saveUsed() {
+  localStorage.setItem('used', JSON.stringify([...state.used]));
+}
+
+// ── FILTER ──
+function filteredStores() {
+  return stores.filter(s => {
+    const catOk  = state.cat === '전체' || s.cat === state.cat;
+    const bldOk  = state.bld === '전체' || s.bld === state.bld;
+    const q      = state.query.trim();
+    const queryOk = !q || s.name.includes(q) || s.cat.includes(q) || s.bld.includes(q) || s.discount.includes(q);
+    return catOk && bldOk && queryOk;
+  });
+}
+
+// ── RENDER CARD ──
+function renderCard(s) {
+  const isFav    = state.favs.has(s.id);
+  const isUsed   = state.used.has(s.id);
+  const statusCls = s.open ? 'open' : 'closed';
+  const statusTxt = s.open ? '영업 중' : '마감';
+  const useBtnCls = isUsed ? 'used-done' : (!s.open ? 'closed' : '');
+  const useBtnTxt = isUsed ? '✓ 사용 완료' : '지금 사용';
+
+  const card = document.createElement('div');
+  card.className = 'coupon-card' + (isUsed ? ' used' : '');
+  card.dataset.id = s.id;
+  card.innerHTML = `
+    <div class="coupon-inner">
+      <div class="coupon-thumb" style="background:${s.bg}">${s.emoji}</div>
+      <div class="coupon-info">
+        <div class="coupon-name">${s.name}</div>
+        <div class="coupon-loc">${s.bld} · ${s.detail}</div>
+        <span class="coupon-discount">혜택: ${s.discount}</span>
+      </div>
+      <div class="coupon-right">
+        <span class="status-badge ${statusCls}">${statusTxt}</span>
+        <button class="fav-btn ${isFav ? 'on' : ''}" data-fav="${s.id}" aria-label="즐겨찾기">${isFav ? '★' : '☆'}</button>
+        <button class="use-btn ${useBtnCls}" data-use="${s.id}" ${(!s.open && !isUsed) ? 'disabled' : ''}>${useBtnTxt}</button>
+      </div>
+    </div>
+  `;
+  return card;
+}
+
+// ── RENDER ALL ──
+function render() {
+  const list   = filteredStores();
+  const favIds = list.filter(s => state.favs.has(s.id));
+  const rest   = list.filter(s => !state.favs.has(s.id));
+
+  const favSection = document.getElementById('favSection');
+  const favList    = document.getElementById('favList');
+  const allList    = document.getElementById('allList');
+  const allSection = document.getElementById('allSection');
+  const emptyState = document.getElementById('emptyState');
+
+  document.getElementById('favCount').textContent = favIds.length;
+  document.getElementById('allCount').textContent = rest.length;
+
+  favList.innerHTML = '';
+  allList.innerHTML = '';
+
+  favSection.style.display = favIds.length ? '' : 'none';
+  allSection.style.display = list.length ? '' : 'none';
+  emptyState.style.display = list.length ? 'none' : 'block';
+
+  favIds.forEach(s => favList.appendChild(renderCard(s)));
+  rest.forEach(s   => allList.appendChild(renderCard(s)));
+}
+
+// ── OPEN MODAL ──
+function openModal(id) {
+  const s = stores.find(x => x.id === id);
+  if (!s) return;
+  state.activeModalId = id;
+  document.getElementById('modalIcon').textContent = s.emoji;
+  document.getElementById('modalName').textContent = s.name;
+  document.getElementById('modalLoc').textContent  = `${s.bld} · ${s.detail} · 영업: ${s.hours}`;
+  document.getElementById('modalDiscountBig').textContent  = s.discountBig;
+  document.getElementById('modalDiscountDesc').textContent = s.discountDesc;
+
+  const conds = document.getElementById('modalConditions');
+  conds.innerHTML = s.conditions.map(c => `<div class="modal-condition-item">${c}</div>`).join('');
+
+  document.getElementById('modalOverlay').classList.add('visible');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('visible');
+  document.body.style.overflow = '';
+  state.activeModalId = null;
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ── EVENT DELEGATION ──
+document.getElementById('mainBody').addEventListener('click', e => {
+  const favBtn = e.target.closest('[data-fav]');
+  const useBtn = e.target.closest('[data-use]');
+
+  if (favBtn) {
+    const id = Number(favBtn.dataset.fav);
+    if (state.favs.has(id)) {
+      state.favs.delete(id);
+      showToast('즐겨찾기에서 제거했습니다.');
+    } else {
+      state.favs.add(id);
+      showToast('즐겨찾기에 추가했습니다.');
+    }
+    saveFavs();
+    render();
+  }
+
+  if (useBtn) {
+    const id = Number(useBtn.dataset.use);
+    const s  = stores.find(x => x.id === id);
+    if (!s || useBtn.disabled) return;
+    openModal(id);
+  }
+});
+
+// Modal Actions
+document.getElementById('modalDone').addEventListener('click', () => {
+  if (state.activeModalId) {
+    state.used.add(state.activeModalId);
+    saveUsed();
+    showToast('사용 완료 처리했습니다.');
+    closeModal();
+    render();
+  }
+});
+
+// Modal Map Link
+document.getElementById('modalMap').addEventListener('click', () => {
+  if (state.activeModalId) {
+    const s = stores.find(x => x.id === state.activeModalId);
+    if (s) {
+      const query = encodeURIComponent(s.name + ' 오키나와 아메리칸 빌리지');
+      window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+    }
+  }
+});
+
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+});
+
+// ── SEARCH ──
+const searchInput = document.getElementById('searchInput');
+const searchClear = document.getElementById('searchClear');
+
+searchInput.addEventListener('input', () => {
+  state.query = searchInput.value;
+  searchClear.style.display = state.query ? 'flex' : 'none';
+  render();
+});
+searchClear.addEventListener('click', () => {
+  searchInput.value = '';
+  state.query = '';
+  searchClear.style.display = 'none';
+  render();
+});
+
+// ── CATEGORY CHIPS ──
+document.getElementById('catFilter').addEventListener('click', e => {
+  const chip = e.target.closest('.chip');
+  if (!chip) return;
+  state.cat = chip.dataset.cat;
+  document.querySelectorAll('#catFilter .chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  render();
+});
+
+// ── BUILDING CHIPS ──
+document.getElementById('bldFilter').addEventListener('click', e => {
+  const chip = e.target.closest('.chip');
+  if (!chip) return;
+  state.bld = chip.dataset.bld;
+  document.querySelectorAll('#bldFilter .chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  render();
+});
+
+// ── INIT ──
+render();
+</script>
 </body>
 </html>
