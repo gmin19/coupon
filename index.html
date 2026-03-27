@@ -264,7 +264,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 6px;
+    gap: 8px;
     flex-shrink: 0;
   }
 
@@ -305,6 +305,22 @@
   .use-btn:active { transform: scale(0.95); }
   .use-btn.closed { background: var(--border); color: var(--text-hint); cursor: not-allowed; }
   .use-btn.used-done { background: var(--primary-pale); color: var(--primary); }
+
+  /* ── MAP BTN (Card level) ── */
+  .map-btn {
+    background: #e0f2fe;
+    color: #0284c7;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 11px;
+    border-radius: var(--radius-btn);
+    border: none;
+    cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: background 0.15s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .map-btn:active { transform: scale(0.95); background: #bae6fd; }
 
   /* ── EMPTY STATE ── */
   .empty-state {
@@ -625,7 +641,7 @@
       <div class="modal-key-icon">[안내]</div>
       <div>
         <div class="modal-key-text">룸 키를 직원에게 보여주세요.</div>
-        <div class="modal-key-sub">베셀 &amp; 레쿠 오키나와 투숙 고객 전용 혜택</div>
+        <div class="modal-key-sub">베셀 & 레쿠 오키나와 투숙 고객 전용 혜택</div>
       </div>
     </div>
     <div class="modal-actions">
@@ -814,9 +830,14 @@ function renderCard(s) {
         <span class="coupon-discount">혜택: ${s.discount}</span>
       </div>
       <div class="coupon-right">
-        <span class="status-badge ${statusCls}">${statusTxt}</span>
-        <button class="fav-btn ${isFav ? 'on' : ''}" data-fav="${s.id}" aria-label="즐겨찾기">${isFav ? '★' : '☆'}</button>
-        <button class="use-btn ${useBtnCls}" data-use="${s.id}" ${(!s.open && !isUsed) ? 'disabled' : ''}>${useBtnTxt}</button>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="status-badge ${statusCls}">${statusTxt}</span>
+          <button class="fav-btn ${isFav ? 'on' : ''}" data-fav="${s.id}" aria-label="즐겨찾기">${isFav ? '★' : '☆'}</button>
+        </div>
+        <div style="display: flex; gap: 4px;">
+          <button class="map-btn" data-map="${s.id}">지도 보기</button>
+          <button class="use-btn ${useBtnCls}" data-use="${s.id}" ${(!s.open && !isUsed) ? 'disabled' : ''}>${useBtnTxt}</button>
+        </div>
       </div>
     </div>
   `;
@@ -885,6 +906,7 @@ function showToast(msg) {
 document.getElementById('mainBody').addEventListener('click', e => {
   const favBtn = e.target.closest('[data-fav]');
   const useBtn = e.target.closest('[data-use]');
+  const mapBtn = e.target.closest('[data-map]');
 
   if (favBtn) {
     const id = Number(favBtn.dataset.fav);
@@ -904,6 +926,15 @@ document.getElementById('mainBody').addEventListener('click', e => {
     const s  = stores.find(x => x.id === id);
     if (!s || useBtn.disabled) return;
     openModal(id);
+  }
+
+  if (mapBtn) {
+    const id = Number(mapBtn.dataset.map);
+    const s = stores.find(x => x.id === id);
+    if (s) {
+      const query = encodeURIComponent(s.name + ' 오키나와 아메리칸 빌리지');
+      window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+    }
   }
 });
 
